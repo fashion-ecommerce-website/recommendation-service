@@ -1,0 +1,38 @@
+{
+  "cutoff": "2025-09-28",
+  "k": 32,
+  "seed": 42,
+  "users_eval": 1889,
+  "users_filtered": 0,
+  "users_missing_gt": 0,
+  "users_missing_key_redis": 0,
+  "#users_train": 1907,
+  "#users_test": 1889,
+  "#items": 500,
+  "lift_vs_mostpopular": {
+    "ndcg@k": -0.032653316366040616,
+    "recall@k": -0.07137664418158299
+  },
+  "args": {
+    "db_host": "localhost",
+    "db_port": 5432,
+    "db_name": "fit_db",
+    "db_user": "postgres",
+    "db_password": "ha3072003",
+    "redis_host": "localhost",
+    "redis_port": 6379,
+    "redis_db": 0,
+    "redis_password": null,
+    "redis_prefix": "rec",
+    "model_dir": "model",
+    "model_file": "ials_model_and_meta.pkl",
+    "cutoff": "2025-09-28",
+    "k": 32,
+    "topk_list": null,
+    "gt_events": "VIEW, ADD_TO_CART, LIKE, PURCHASE",
+    "include_add_to_cart": false,
+    "use_redis": false,
+    "output_dir": "./eval_out",
+    "seed": 42
+  }
+}

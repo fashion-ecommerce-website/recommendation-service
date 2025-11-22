@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # AI Recommendation Service
+  recommendation-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: recommendation-service
+    environment:
+      # Database (connect to external PostgreSQL)
+      DB_HOST: host.docker.internal
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-recommendation_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      
+      # Redis (connect to external Redis)
+      REDIS_HOST: host.docker.internal
+      REDIS_PORT: 6379
+      REDIS_DB: ${REDIS_DB:-0}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_PREFIX: ${REDIS_PREFIX:-rec}
+      REDIS_TTL: ${REDIS_TTL:-604800}
+      
+      # Model
+      MODEL_DIR: model
+      
+      # API
+      API_PORT: ${API_PORT:-5000}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      
+      # Training (optional)
+      ALS_FACTORS: ${ALS_FACTORS:-64}
+      ALS_REG: ${ALS_REG:-0.01}
+      ALS_ITERS: ${ALS_ITERS:-20}
+      ALS_THREADS: ${ALS_THREADS:-0}
+      IMPL_ALPHA: ${IMPL_ALPHA:-10}
+      TOP_N: ${TOP_N:-10}
+      ACTION_WEIGHTS: ${ACTION_WEIGHTS:-VIEW=1,ADD_TO_CART=5,LIKE=3,PURCHASE=8}
+    ports:
+      - "5000:5000" 
+    volumes:
+      - ./model:/app/model
+      # Không mount .env file vì đã set environment variables trực tiếp
+      # Nếu cần dùng .env, uncomment dòng dưới và đảm bảo REDIS_HOST=host.docker.internal
+      # - ./.env:/app/.env:ro
+    # Use host network mode để dễ dàng connect đến services bên ngoài
+    # Hoặc dùng extra_hosts cho Linux
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+

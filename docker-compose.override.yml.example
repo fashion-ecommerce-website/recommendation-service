@@ -1,0 +1,19 @@
+# File này dùng để override cấu hình docker-compose.yml
+# Copy file này thành docker-compose.override.yml nếu cần customize
+# docker-compose.override.yml sẽ tự động được load bởi docker-compose
+
+version: '3.8'
+
+services:
+  recommendation-service:
+    # Ví dụ: Mount thêm volumes
+    # volumes:
+    #   - ./logs:/app/logs
+    
+    # Ví dụ: Override environment variables
+    # environment:
+    #   LOG_LEVEL: DEBUG
+    
+    # Ví dụ: Thêm command để chạy training trước khi start service
+    # command: sh -c "python train_ials.py && python api_service.py"
+
