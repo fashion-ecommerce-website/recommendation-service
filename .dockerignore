@@ -21,11 +21,11 @@ env/
 *.swo
 *~
 
-# Model files (sẽ được mount từ volume)
-model/*.pkl
-model/*.pth
-model/*.h5
-model/*.ckpt
+# Model files - Comment out để copy vào Docker image
+# model/*.pkl
+# model/*.pth
+# model/*.h5
+# model/*.ckpt
 
 # Logs
 *.log

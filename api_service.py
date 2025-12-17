@@ -100,6 +100,15 @@ def load_model():
                 len(user_ids_map), len(product_ids_map))
 
 
+@app.route("/", methods=["GET", "HEAD"])
+def root():
+    """Root endpoint for health check"""
+    return jsonify({
+        "service": "AI Recommendation Service",
+        "status": "running",
+        "version": "1.0.0"
+    }), 200
+
 @app.route("/health", methods=["GET"])
 def health():
     """Health check endpoint"""
