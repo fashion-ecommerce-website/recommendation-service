@@ -26,8 +26,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5 # Use official build-push action
         with:
-          context: ./recommendation-service
-          file: ./recommendation-service/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           tags: |
             thinhnd24/fit-recommendation-service:latest
