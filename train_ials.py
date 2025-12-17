@@ -201,6 +201,7 @@ def train_ials(user_item: coo_matrix, model_params: Dict) -> AlternatingLeastSqu
         regularization=model_params["regularization"],
         iterations=model_params["iterations"],
         num_threads=model_params.get("num_threads", 0),
+        random_state=42
     )
     logger.info(
         "Training IALS: factors=%d, reg=%.4f, iters=%d, threads=%d",

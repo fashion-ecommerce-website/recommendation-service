@@ -218,16 +218,25 @@ def get_user_recommendations(user_id: int):
     cache_key = f"{redis_prefix}:user:{user_id}"
     
     try:
-        # Lấy từ Redis (sorted set, score = rank)
-        product_ids = redis_client.zrange(cache_key, 0, -1)
+        # Lấy từ Redis với scores để đảm bảo thứ tự đúng (score cao → thấp)
+        items_with_scores = redis_client.zrevrange(cache_key, 0, -1, withscores=True)
         
-        if not product_ids:
+        logger.info("[DEBUG] Raw from Redis zrevrange: %s", items_with_scores[:5] if items_with_scores else "empty")
+        
+        if not items_with_scores:
             logger.warning("No recommendations found for user_id: %d", user_id)
             return jsonify({"error": "No recommendations found"}), 404
         
-        # Convert to integers
-        result = [int(pid) for pid in product_ids]
-        logger.info("Found %d recommendations for user_id: %d", len(result), user_id)
+        # Sort by score descending (đảm bảo thứ tự đúng) và convert to integers
+        sorted_items = sorted(items_with_scores, key=lambda x: x[1], reverse=True)
+        
+        logger.info("[DEBUG] After sort by score desc: %s", sorted_items[:5])
+        
+        result = [int(pid) for pid, score in sorted_items]
+        
+        logger.info("[DEBUG] Final result: %s", result[:5])
+        logger.info("Found %d recommendations for user_id: %d (first: %s, last: %s)", 
+                   len(result), user_id, result[0] if result else None, result[-1] if result else None)
         return jsonify(result)
         
     except Exception as e:
@@ -279,18 +288,18 @@ def get_most_popular():
     cache_key = f"{redis_prefix}:global:most-popular"
     
     try:
-        # Lấy từ Redis (ZSET, sorted by score descending)
-        # ZRANGE với desc=True để lấy items có score cao nhất
-        product_ids = redis_client.zrange(cache_key, 0, limit - 1, desc=True, withscores=False)
+        # Lấy từ Redis với scores để đảm bảo thứ tự đúng (score cao → thấp)
+        items_with_scores = redis_client.zrevrange(cache_key, 0, limit - 1, withscores=True)
         
-        if not product_ids:
+        if not items_with_scores:
             logger.warning("No popular items found in cache key: %s", cache_key)
-            # Fallback: trả về empty list
             return jsonify([])
         
-        # Convert to integers
-        result = [int(pid) for pid in product_ids]
-        logger.info("Found %d popular items from key: %s", len(result), cache_key)
+        # Sort by score descending (đảm bảo thứ tự đúng) và convert to integers
+        sorted_items = sorted(items_with_scores, key=lambda x: x[1], reverse=True)
+        result = [int(pid) for pid, score in sorted_items]
+        
+        logger.info("Found %d popular items from key: %s (first: %s)", len(result), cache_key, result[0] if result else None)
         return jsonify(result)
         
     except Exception as e:
